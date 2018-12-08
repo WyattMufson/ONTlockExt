@@ -10,4 +10,5 @@ app.controller("popupCtrl", function($scope, $http) {
       $scope.payload.related_articles = [];
     });
   });
+
 });
