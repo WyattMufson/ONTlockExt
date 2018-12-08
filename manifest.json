@@ -1,6 +1,16 @@
 {
     "name": "ONTlock",
-    "version": "1.0",
+    "author": "Ryu Blockchain Technologies",
     "description": "Chrome extension to store encrypted passwords on the Ontology blockchain",
-    "manifest_version": 2
+    "version": "1.0",
+    "manifest_version": 2,
+    "browser_action": {
+      "default_icon": "icon.png",
+      "default_popup": "index.html"
+    },
+    "permissions": [
+      "tabs",
+      "activeTab",
+      "clipboardWrite"
+    ]
   }

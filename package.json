@@ -1,0 +1,24 @@
+{
+  "name": "ONTlock",
+  "version": "1.0.0",
+  "description": "Chrome extension to store encrypted passwords on the Ontology blockchain",
+  "author": "Ryu Blockchain Technologies",
+  "repository": "https://github.com/Ryucoin/ONTlock",
+  "main": "main.js",
+  "keywords": [
+    "ryu",
+    "ont"
+  ],
+  "license": "MIT",
+  "devDependencies": {
+    "eslint": "^5.9.0",
+    "eslint-config-airbnb-base": "^13.1.0",
+    "eslint-plugin-import": "^2.14.0"
+  },
+  "scripts": {
+    "test": "eslint ."
+  },
+  "dependencies": {
+    "eslint-config-airbnb": "^17.1.0"
+  }
+}
