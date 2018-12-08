@@ -1,14 +1,16 @@
 var app = angular.module("mainpopup", []);
 console.log("1");
 app.controller("popupCtrl", function($scope, $http) {
-  $scope.payload = {};
+  $scope.passwords = {
+    "password" : "pass123",
+    "username" : "krasner.ross@gmail.com",
+    "url" : "facebook.com"
+  },
+  {
+    "password" : "p!@as2s123",
+    "username" : "rosskrasner",
+    "url" : "twitter.com"
+  }
   console.log("2");
-
-  chrome.tabs.query({'active': true, 'lastFocusedWindow': true}, function (tabs) {
-    $scope.$apply(function(){
-      $scope.the_url = tabs[0].url;
-      $scope.payload.related_articles = [];
-    });
-  });
 
 });

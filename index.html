@@ -2,47 +2,44 @@
   <head>
     <style type="text/css">
     	#mainPopup {
-    		width: 700px;
-    		font-family: 'Barlow Condensed', sans-serif;
-    		background: #e8e1cb;
+    		width: 300px;
+    		font-family: sans-serif;
+    		background: #262626;
     	}
-    	.list-group-item {
-    		background: #f8f5e8 !important;
-    	}
-    	#header {
-    		background: #002f4a;
-    		color: #fff;
-    		margin-top: -10px;
-    		margin-bottom: 10px;
-    		padding:10px;
-    		font-family: 'Barlow Condensed', sans-serif;
-    		text-transform: uppercase;
-    		font-weight: 900;
-    	}
-    	.list-group-item-heading {
-    		font-family: "Lora", Georgia, Times, Serif;
-    	}
-    	#footer {
-    		background: #002f4a;
-    		color: #fff;
-    		padding:10px;
-    	}
-    	.content {
-    		padding: 0 10px;
-    	}
-    	.keyword {
-    		margin-left:5px;
-    		background: #e8e1cb !important;
-    		color: #002f4a !important;
-    	}
-    	.btn-default {
-    		background: #002f4a !important;
-    		color: #fff !important;
-    	}
-    	.articles {
-    		max-height: 300px;
-    		overflow-y: scroll;
-    	}
+      #title {
+        color: white;
+        display: inline-block;
+      }
+      #logo {
+        display: inline-block;
+        float: left;
+        margin: 10px 20px 0 10px;
+        height: 50px
+      }
+      #password-list {
+        list-style: none
+      }
+      #password-list li {
+        height: 80px;
+      }
+      #icon-thumb {
+        height: 30;
+        float:left;
+        display: inline-block;
+        margin-left: -30px;
+        margin-top: 20px;
+
+      }
+      #website-label {
+        padding-left: 10px;
+        padding-top: 15px;
+      }
+      #username-label {
+        padding-left: 10px;
+        color: #555555;
+        font-size: 75%;
+
+      }
     </style>
   </head>
   <script src="./js/angular.min.js"></script>
@@ -54,44 +51,34 @@
     <div ng-controller="popupCtrl" id="mainPopup">
     	<div id="header" class="row">
     		<div class="col-xs-12">
-    			<h1><i class="fa fa-compass"></i>ONTlock</h1>
+          <img src="OntLogo.png" id="logo"></img>
+    			<h1 id="title">ONTlock</h1>
     		</div>
-    	</div>
-    	<div ng-hide="payload.related_articles" class="content row">
-    		<div class="col-md-12">
-    			Related Stories Loading...
-    		</div>
-    	</div>
-    	<div ng-show="payload.related_articles" class="content row articles">
-    		<div class="col-xs-12">
-    		<div class="list-group">
-    			<a tabindex="-1" ng-href="{{a.article.link}}" target="_blank" ng-repeat="a in payload.related_articles" class="list-group-item">
-    				<h4 class="list-group-item-heading">{{a.article.headline}}</h4>
-    				<p class="list-group-item-text">{{a.newspaper.name}} | {{format_date(a.article.date)}} | {{a.newspaper.location}}</p>
-    			</a>
-    		</div>
-    	</div>
-    	</div>
-    	<br>
-    	<div ng-show="payload.related_articles" class="content row">
-    		<div class="col-xs-6">
-    			<a tabindex="-1" href="{{payload.google_news_url}}" target="_blank" class="btn btn-block btn-default">
-    				<i class="fa fa-newspaper-o"></i>&nbsp; Google News Search
-    			</a>
-    		</div>
-    		<div class="col-xs-6">
-    			<a tabindex="-1" href="{{payload.google_url}}" target="_blank" class="btn btn-block btn-default">
-    				<i class="fa fa-google"></i>&nbsp; Google Seasrch
-    			</a>
-    		</div>
-    	</div>
-    	<br>
-    	<div ng-show="payload.related_articles" id="footer" class="row">
-    		<div class="col-xs-12">
-    			<div>Keywords Used</div>
-    			<span ng-repeat="keyword in payload.keywords" class="label label-default keyword">{{keyword}}</span>
-    		</div>
-    	</div>
+      </div>
+      <div class="row" style="background-color: white">
+        <div class="col-xs-12">
+          <ul id="password-list">
+            <li>
+              <img src="OntLogo.png" id="icon-thumb">
+              <p id="website-label">website</p>
+              <p id="username-label">username</p>
+              <hr>
+            </li>
+            <li>
+              <img src="OntLogo.png" id="icon-thumb">
+              <p id="website-label">website</p>
+              <p id="username-label">username</p>
+              <hr>
+            </li>
+            <li>
+              <img src="OntLogo.png" id="icon-thumb">
+              <p id="website-label">website</p>
+              <p id="username-label">username</p>
+              <hr>
+            </li>
+          </ul>
+        </div>
+      </div>
     </div>
   </body>
 </html>
