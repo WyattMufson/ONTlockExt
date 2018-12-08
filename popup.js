@@ -68,8 +68,7 @@ app.controller("popupCtrl", function($scope, $http, $window) {
         var pass = localStorage.getItem("pass");
         var parsed = JSON.parse(pass);
         var url = parsed.url;
-
-        window.location.assign(url)
+         window.location.href ="//" + url;
 
       } else if (arg == 5) {
         // Edit
