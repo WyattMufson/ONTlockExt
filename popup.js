@@ -4,11 +4,22 @@ app.controller("popupCtrl", function($scope, $http, $window) {
 
   console.log("2");
 
+  $scope.showDetails = false
+
+  $scope.hideDetails = function () {
+    $scope.showDetails = false
+  }
+
   $scope.passwords = [
       {
       "password" : "pass!@#$",
       "username" : "rosskranser",
       "url" : "facebookc.com"
+    },
+    {
+      "password" : "06@!@#$",
+      "username" : "krasner.ross@gmail.com",
+      "url" : "twitter.com"
     },
     {
       "password" : "06@!@#$",
@@ -21,7 +32,7 @@ app.controller("popupCtrl", function($scope, $http, $window) {
   $scope.showDetailsForPassword = function(pass) {
         var pass = JSON.stringify(pass);
         localStorage.setItem("pass", pass);
-        $window.open('/details.html');
+        $scope.showDetails = true
     };
 
     $scope.action = function(pass, arg) {

@@ -41,6 +41,26 @@
         font-size: 75%;
 
       }
+
+      #back {
+        margin: 10px 20px;
+        text-decoration: underline;
+        color: #555555;
+      }
+      #action-list {
+        text-decoration: none;
+        list-style: none;
+      }
+      #action-list li {
+        height: 40px;
+      }
+      #action-list li > p {
+        padding-top: 10px;
+      }
+      #copyfrom {
+          position: absolute;
+          left: -9999px;
+      }
     </style>
   </head>
   <script src="./js/angular.min.js"></script>
@@ -56,7 +76,7 @@
     			<h1 id="title">ONTlock</h1>
     		</div>
       </div>
-      <div class="row" style="background-color: white">
+      <div class="row" style="background-color: white" ng-hide="showDetails">
         <div class="col-xs-12">
           <ul id="password-list">
             <li ng-repeat="password in passwords"
@@ -68,6 +88,55 @@
               <p id="website-label">{{password.url}}</p>
               <p id="username-label">{{password.username}}</p>
               <hr>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="row" style="background-color: white; padding-bottom: 20px;" ng-show="showDetails">
+        <div class="col-xs-12">
+          <a id="back" href="/" ng-click="hideDetails()">Back</a>
+        </div>
+      </div>
+      <div class="row" style="background-color: white" ng-show="showDetails">
+        <div class="col-xs-12">
+          <ul id="action-list">
+            <li ng-click="action(password, 1)"
+            ng-style="{ 'background': (isHover1 ? '#FAFAFA' : 'transparent') }"
+            ng-mouseenter="isHover1 = true;"
+            ng-mouseleave="isHover1 = false;">
+              <p id="website-label">Copy Username</p>
+              <input id="copyfrom" tabindex='-1' aria-hidden='true'>
+              <!-- Above input needed for copy -->
+            </li>
+            <li ng-click="action(password, 2)"
+            ng-style="{ 'background': (isHover2 ? '#FAFAFA' : 'transparent') }"
+            ng-mouseenter="isHover2 = true;"
+            ng-mouseleave="isHover2 = false;">
+              <p id="website-label">Copy Password</p>
+            </li>
+            <li ng-click="action(password, 3)"
+            ng-style="{ 'background': (isHover3 ? '#FAFAFA' : 'transparent') }"
+            ng-mouseenter="isHover3 = true;"
+            ng-mouseleave="isHover3 = false;">
+              <p id="website-label">Copy URL</p>
+            </li>
+            <li ng-click="action(password, 4)"
+            ng-style="{ 'background': (isHover4 ? '#FAFAFA' : 'transparent') }"
+            ng-mouseenter="isHover4 = true;"
+            ng-mouseleave="isHover4 = false;">
+              <p id="website-label">Go to URL</p>
+            </li>
+            <li ng-click="action(password, 5)"
+            ng-style="{ 'background': (isHover5 ? '#FAFAFA' : 'transparent') }"
+            ng-mouseenter="isHover5 = true;"
+            ng-mouseleave="isHover5 = false;">
+              <p id="website-label">Edit</p>
+            </li>
+            <li ng-click="action(password, 6)"
+            ng-style="{ 'background': (isHover6 ? '#FAFAFA' : 'transparent') }"
+            ng-mouseenter="isHover6 = true;"
+            ng-mouseleave="isHover6 = false;">
+              <p id="website-label">Delete</p>
             </li>
           </ul>
         </div>
