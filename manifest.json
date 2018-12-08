@@ -1,0 +1,6 @@
+{
+    "name": "ONTlock",
+    "version": "1.0",
+    "description": "Chrome extension to store encrypted passwords on the Ontology blockchain",
+    "manifest_version": 1
+  }
