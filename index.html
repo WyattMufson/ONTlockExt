@@ -58,22 +58,10 @@
       <div class="row" style="background-color: white">
         <div class="col-xs-12">
           <ul id="password-list">
-            <li>
+            <li ng-repeat="password in passwords">
               <img src="OntLogo.png" id="icon-thumb">
-              <p id="website-label">website</p>
-              <p id="username-label">username</p>
-              <hr>
-            </li>
-            <li>
-              <img src="OntLogo.png" id="icon-thumb">
-              <p id="website-label">website</p>
-              <p id="username-label">username</p>
-              <hr>
-            </li>
-            <li>
-              <img src="OntLogo.png" id="icon-thumb">
-              <p id="website-label">website</p>
-              <p id="username-label">username</p>
+              <p id="website-label">{{password.url}}</p>
+              <p id="username-label">{{password.username}}</p>
               <hr>
             </li>
           </ul>
