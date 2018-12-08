@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "lib": ["es6"],
+    "target": "es6"
+  },
+  "sourceMap": true,
+  "declaration": true,
+  "strict": true,
+  "include":[
+    "node_modules/@types",
+    "**/*.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}
