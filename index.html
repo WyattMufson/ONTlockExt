@@ -3,6 +3,7 @@
     <style type="text/css">
     	#mainPopup {
     		width: 300px;
+        max-height: 500px;
     		font-family: sans-serif;
     		background: #262626;
     	}
@@ -58,7 +59,11 @@
       <div class="row" style="background-color: white">
         <div class="col-xs-12">
           <ul id="password-list">
-            <li ng-repeat="password in passwords">
+            <li ng-repeat="password in passwords"
+                ng-click="showDetailsForPassword(password)"
+                ng-style="{ 'background': (isHover ? '#FAFAFA' : 'transparent') }"
+                ng-mouseenter="isHover = true;"
+                ng-mouseleave="isHover = false;">
               <img src="OntLogo.png" id="icon-thumb">
               <p id="website-label">{{password.url}}</p>
               <p id="username-label">{{password.username}}</p>
