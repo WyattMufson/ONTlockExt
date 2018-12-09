@@ -90,6 +90,7 @@ app.controller("popupCtrl", function($scope, $http, $window) {
     $scope.isValidPrivateKey(pk, pw, (valid) => {
       if (valid) {
         $scope.logIn();
+        localStorage.setItem("isLoggedIn", true);
       } else {
         $scope.showEror();
       }
@@ -306,6 +307,23 @@ app.controller("popupCtrl", function($scope, $http, $window) {
     $scope.showDetails = false;
     $scope.firstLoad = false;
 
+  }
+
+  if ($scope.isLoggedIn){
+    var key = localStorage.getItem("pk");
+    var master = localStorage.getItem("master");
+    $scope.getPasswords(key, master).then((res) => {
+      if (res == null) {
+        $scope.isLoggedIn = false;
+        localStorage.setItem("isLoggedIn", false);
+      } else {
+        showDetails = false
+        showPasswords = true
+        showAddPassword = false;
+        showDetails = false;
+        firstLoad = false;
+      }
+    });
   }
 
   $scope.selectedPassword = {};
