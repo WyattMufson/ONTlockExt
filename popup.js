@@ -64,16 +64,20 @@ function put(pkey, value, handler){
 function getPasswords(privateKey, master){
   return new Promise(function(resolve, reject) {
     get(privateKey, (data) => {
-      var crypt = aesjs.utils.utf8.toBytes(master);
-      var encryptedBytes = aesjs.utils.hex.toBytes(data);
-      var aesCtr = new aesjs.ModeOfOperation.ctr(crypt);
-      var decryptedBytes = aesCtr.decrypt(encryptedBytes);
-      var decryptedText = aesjs.utils.utf8.fromBytes(decryptedBytes);
-      try {
-        resolve(JSON.parse(decryptedText));
-      } catch (error) {
-        console.log(error);
-        resolve(null);
+      if (data == "00"){
+        resolve([]);
+      } else {
+        var crypt = aesjs.utils.utf8.toBytes(master);
+        var encryptedBytes = aesjs.utils.hex.toBytes(data);
+        var aesCtr = new aesjs.ModeOfOperation.ctr(crypt);
+        var decryptedBytes = aesCtr.decrypt(encryptedBytes);
+        var decryptedText = aesjs.utils.utf8.fromBytes(decryptedBytes);
+        try {
+          resolve(JSON.parse(decryptedText));
+        } catch (error) {
+          console.log(error);
+          resolve(null);
+        }
       }
     });
   });
@@ -175,14 +179,19 @@ app.controller("popupCtrl", function($scope, $http, $window) {
 
   }
 
-  $scope.isValidPrivateKey = async function(key, master, handler) {
-    let res = await getPasswords(key, fixMaster(master));
+  $scope.isValidPrivateKey = async function(key, pw, handler) {
+    let master = fixMaster(pw);
+    let res = await getPasswords(key, master);
     if (res == null) {
       console.log("Incorrect password/privatekey combination");
       handler(false);
     } else {
       localStorage.setItem("pk", key);
-      handler(true);
+      $scope.passwords = res;
+      encryptAndSerialize(key, master, res, (set) => {
+        console.log(set.desc == "SUCCESS");
+        handler(true);
+      });
     }
   }
 
@@ -196,23 +205,23 @@ app.controller("popupCtrl", function($scope, $http, $window) {
     $scope.showPasswords = true
   }
 
-  $scope.passwords = [
-      {
-      "password" : "pass!@#$",
-      "username" : "rosskranser",
-      "url" : "facebookc.com"
-    },
-    {
-      "password" : "06@!@#$",
-      "username" : "krasner.ross@gmail.com",
-      "url" : "twitter.com"
-    },
-    {
-      "password" : "06@!@#$",
-      "username" : "krasner.ross@gmail.com",
-      "url" : "twitter.com"
-    }
-  ];
+  // $scope.passwords = [
+  //     {
+  //     "password" : "pass!@#$",
+  //     "username" : "rosskranser",
+  //     "url" : "facebookc.com"
+  //   },
+  //   {
+  //     "password" : "06@!@#$",
+  //     "username" : "krasner.ross@gmail.com",
+  //     "url" : "twitter.com"
+  //   },
+  //   {
+  //     "password" : "06@!@#$",
+  //     "username" : "krasner.ross@gmail.com",
+  //     "url" : "twitter.com"
+  //   }
+  // ];
   $scope.selectedPassword = {};
 
   $scope.showDetailsForPassword = function(pass) {
