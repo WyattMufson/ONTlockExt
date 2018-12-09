@@ -215,23 +215,6 @@ app.controller("popupCtrl", function($scope, $http, $window) {
     $scope.showPasswords = true
   }
 
-  // $scope.passwords = [
-  //     {
-  //     "password" : "pass!@#$",
-  //     "username" : "rosskranser",
-  //     "url" : "facebookc.com"
-  //   },
-  //   {
-  //     "password" : "06@!@#$",
-  //     "username" : "krasner.ross@gmail.com",
-  //     "url" : "twitter.com"
-  //   },
-  //   {
-  //     "password" : "06@!@#$",
-  //     "username" : "krasner.ross@gmail.com",
-  //     "url" : "twitter.com"
-  //   }
-  // ];
   $scope.selectedPassword = {};
 
   $scope.showDetailsForPassword = function(pass) {
