@@ -151,12 +151,12 @@ app.controller("popupCtrl", function($scope, $http, $window) {
   $scope.logInClicked = function() {
     var pk = document.getElementById("private-key-input").value;
     var pw = document.getElementById("password-input").value;
-
-    $scope.isValidPrivateKey(pk, pw, (valid) => {
-      if (valid) {
-        $scope.logIn();
-      }
-    });
+    $scope.logIn();
+    // $scope.isValidPrivateKey(pk, pw, (valid) => {
+    //   if (valid) {
+    //     $scope.logIn();
+    //   }
+    // });
   }
 
   $scope.addPassword = function() {
