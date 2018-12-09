@@ -224,15 +224,15 @@
       <!-- Add Password Page -->
       <div class="row" style="background-color: white" ng-if="showAddPassword">
         <div class="col-xs-12" id="add-new-password">
-          <h5>Add a password</h5>
+          <h5>{{addOrEdit}}</h5>
           <p>URL</p>
-          <input id="new-url"></input>
+          <input id="new-url" clientIdMode="static"></input>
           <p>Username</p>
-          <input id="new-username"></input>
+          <input id="new-username" clientIdMode="static"></input>
           <p>Password</p>
           <input id="new-password" type="password"></input>
 
-          <a ng-click="addNewPassword()"><button>Add Password</button></a>
+          <a ng-click="addNewPassword()"><button>{{addOrEdit}}</button></a>
 
         </div>
       </div>

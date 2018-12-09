@@ -149,7 +149,7 @@ app.controller("popupCtrl", function($scope, $http, $window) {
     $scope.firstLoad = true;
     $scope.showAddPassword = false;
 
-
+    $scope.addOrEdit = "Add a password"
 
   $scope.logInClicked = function() {
     var pk = document.getElementById("private-key-input").value;
@@ -163,10 +163,35 @@ app.controller("popupCtrl", function($scope, $http, $window) {
   }
 
   $scope.addPassword = function() {
+
+    $scope.addOrEdit = "Add a password"
+
+
     $scope.showAddPassword = true;
     $scope.showDetails = false;
     $scope.showPasswords = false;
     $scope.firstLoad = false;
+  }
+
+  $scope.editPassword = function() {
+
+    $scope.addOrEdit = "Edit a password"
+
+
+    $scope.showAddPassword = true;
+    $scope.showDetails = false;
+    $scope.showPasswords = false;
+    $scope.firstLoad = false;
+
+    var pass = localStorage.getItem("pass");
+    var parsed = JSON.parse(pass);
+    var un = parsed.username;
+    var pw = parsed.password;
+    var url = parsed.url;
+
+    document.getElementById("new-username").value = un;
+    document.getElementById("new-url").value = url;
+    document.getElementById("new-password").value = pw;
 
 
   }
@@ -279,6 +304,7 @@ app.controller("popupCtrl", function($scope, $http, $window) {
 
       } else if (arg == 5) {
         // Edit
+        $scope.editPassword()
 
       } else if (arg == 6) {
         // Delete
