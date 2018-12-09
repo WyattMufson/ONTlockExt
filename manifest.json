@@ -12,5 +12,6 @@
       "tabs",
       "activeTab",
       "clipboardWrite"
-    ]
+    ],
+    "web_accessible_resources": ["OntLogo.png"]
   }

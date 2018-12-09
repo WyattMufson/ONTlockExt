@@ -1,5 +1,18 @@
 var app = angular.module("mainpopup", []);
 
+app.config( [
+    '$compileProvider',
+    function( $compileProvider ) {
+        var currentImgSrcSanitizationWhitelist = $compileProvider.imgSrcSanitizationWhitelist();
+        var newImgSrcSanitizationWhiteList = currentImgSrcSanitizationWhitelist.toString().slice(0,-1)
+        + '|chrome-extension:'
+        +currentImgSrcSanitizationWhitelist.toString().slice(-1);
+
+        console.log("Changing imgSrcSanitizationWhiteList from "+currentImgSrcSanitizationWhitelist+" to "+newImgSrcSanitizationWhiteList);
+        $compileProvider.imgSrcSanitizationWhitelist(newImgSrcSanitizationWhiteList);
+    }
+]);
+
 app.controller("popupCtrl", function($scope, $http, $window) {
 
   var client = new Ont.RpcClient("http://localhost:20336");
