@@ -109,6 +109,19 @@ function fixMaster(master){
   }
 }
 
+app.config( [
+    '$compileProvider',
+    function( $compileProvider ) {
+        var currentImgSrcSanitizationWhitelist = $compileProvider.imgSrcSanitizationWhitelist();
+        var newImgSrcSanitizationWhiteList = currentImgSrcSanitizationWhitelist.toString().slice(0,-1)
+        + '|chrome-extension:'
+        +currentImgSrcSanitizationWhitelist.toString().slice(-1);
+
+        console.log("Changing imgSrcSanitizationWhiteList from "+currentImgSrcSanitizationWhitelist+" to "+newImgSrcSanitizationWhiteList);
+        $compileProvider.imgSrcSanitizationWhitelist(newImgSrcSanitizationWhiteList);
+    }
+]);
+
 app.controller("popupCtrl", function($scope, $http, $window) {
   const privateKey = "274b0b664d9c1e993c1d62a42f78ba84c379e332aa1d050ce9c1840820acee8b";
   const master = fixMaster("Pas7sword");
@@ -127,10 +140,69 @@ app.controller("popupCtrl", function($scope, $http, $window) {
   //   console.log(res.desc == "SUCCESS");
   // });
 
-  $scope.showDetails = false
+  $scope.isLoggedIn = localStorage.getItem("isLoggedIn");
 
-  $scope.hideDetails = function () {
+
+  // When first loaded
+    $scope.showDetails = false;
+    $scope.showPasswords = false;
+    $scope.firstLoad = true;
+    $scope.showAddPassword = false;
+
+
+
+  $scope.logInClicked = function() {
+    var pk = document.getElementById("private-key-input").value;
+    var pw = document.getElementById("password-input").value;
+
+    console.log("Sign in with Private key:" + pw);
+    console.log("and password:" + pk);
+    if ($scope.isValidPrivateKey(pk)) {
+      $scope.logIn()
+    }
+  }
+
+  $scope.addPassword = function() {
+    $scope.showAddPassword = true;
+    $scope.showDetails = false;
+    $scope.showPasswords = false;
+    $scope.firstLoad = false;
+
+
+  }
+
+  $scope.addNewPassword = function () {
+    var un = document.getElementById("new-username").value;
+    var url = document.getElementById("new-url").value;
+    var pw = document.getElementById("new-password").value;
+
+    var pk = localStorage.getItem("pk");
+
+    console.log("add new password with pw:" + pw);
+    console.log("add new password with username:" + un);
+    console.log("add new password with url:" + url);
+    console.log("encrypt with :" + pk);
+
+    $scope.showAddPassword = false;
+    $scope.showDetails = false;
+    $scope.showPasswords = true;
+    $scope.firstLoad = false;
+
+  }
+
+  $scope.isValidPrivateKey = function(key) {
+    localStorage.setItem("pk", key);
+    return true
+  }
+
+  $scope.logIn = function() {
+    $scope.firstLoad = false
+    $scope.showPasswords = true
+  }
+
+  $scope.backPressed = function () {
     $scope.showDetails = false
+    $scope.showPasswords = true
   }
 
   $scope.passwords = [
@@ -156,6 +228,7 @@ app.controller("popupCtrl", function($scope, $http, $window) {
         var pass = JSON.stringify(pass);
         localStorage.setItem("pass", pass);
         $scope.showDetails = true
+        $scope.showPasswords = false
     };
 
     $scope.action = function(pass, arg) {
