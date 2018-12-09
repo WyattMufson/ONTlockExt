@@ -28,6 +28,7 @@ app.controller("popupCtrl", function($scope, $http, $window) {
     $scope.showDetails = false;
     $scope.showPasswords = false;
     $scope.firstLoad = true;
+    $scope.showAddPassword = false;
 
 
 
@@ -40,6 +41,34 @@ app.controller("popupCtrl", function($scope, $http, $window) {
     if ($scope.isValidPrivateKey(pk)) {
       $scope.logIn()
     }
+  }
+
+  $scope.addPassword = function() {
+    $scope.showAddPassword = true;
+    $scope.showDetails = false;
+    $scope.showPasswords = false;
+    $scope.firstLoad = false;
+
+
+  }
+
+  $scope.addNewPassword = function () {
+    var un = document.getElementById("new-username").value;
+    var url = document.getElementById("new-url").value;
+    var pw = document.getElementById("new-password").value;
+
+    var pk = localStorage.getItem("pk");
+
+    console.log("add new password with pw:" + pw);
+    console.log("add new password with username:" + un);
+    console.log("add new password with url:" + url);
+    console.log("encrypt with :" + pk);
+
+    $scope.showAddPassword = false;
+    $scope.showDetails = false;
+    $scope.showPasswords = true;
+    $scope.firstLoad = false;
+
   }
 
   $scope.isValidPrivateKey = function(key) {
