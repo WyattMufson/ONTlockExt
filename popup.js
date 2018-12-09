@@ -73,7 +73,11 @@ function getPasswords(privateKey, master){
         var decryptedBytes = aesCtr.decrypt(encryptedBytes);
         var decryptedText = aesjs.utils.utf8.fromBytes(decryptedBytes);
         try {
-          resolve(JSON.parse(decryptedText));
+          const arr = JSON.parse(decryptedText);
+          const fix = remove_duplicates_safe(arr);
+          console.log(JSON.stringify(fix));
+          resolve(fix);
+
         } catch (error) {
           console.log(error);
           resolve(null);
@@ -105,6 +109,19 @@ function fixMaster(master){
     }
     return rn;
   }
+}
+
+function remove_duplicates_safe(arr) {
+  var seen = {};
+  var ret_arr = [];
+  for (var i = 0; i < arr.length; i++) {
+    const string = JSON.stringify(arr[i]);
+    if (!(string in seen)) {
+        ret_arr.push(arr[i]);
+        seen[string] = true;
+    }
+  }
+  return ret_arr;
 }
 
 app.config( [
@@ -149,10 +166,25 @@ app.controller("popupCtrl", function($scope, $http, $window) {
 
   }
 
+  $scope.close = function () {
+    $scope.showAddPassword = false;
+    $scope.showDetails = false;
+    $scope.showPasswords = true;
+    $scope.firstLoad = false;
+  }
+
   $scope.addNewPassword = function () {
     var un = document.getElementById("new-username").value;
     var url = document.getElementById("new-url").value;
     var pw = document.getElementById("new-password").value;
+
+    if ((un == "" || un == null) || (url == "" || url == null) || (pw == "" || pw == null)){
+      $scope.showAddPassword = false;
+      $scope.showDetails = false;
+      $scope.showPasswords = true;
+      $scope.firstLoad = false;
+      return
+    }
 
     var pk = localStorage.getItem("pk");
     var master = localStorage.getItem("master");
@@ -169,21 +201,16 @@ app.controller("popupCtrl", function($scope, $http, $window) {
       passwords.push(newPassword);
       encryptAndSerialize(pk, master, passwords, (set) => {
         const success = set.desc == "SUCCESS";
+        console.log(`Success: ${success}`);
         if (success){
-          $scope.passwords.push(newPassword);
+          $scope.passwords = passwords;
         }
+        $scope.close();
 
-        $scope.showAddPassword = false;
-        $scope.showDetails = false;
-        $scope.showPasswords = true;
-        $scope.firstLoad = false;
       });
 
     } else {
-      $scope.showAddPassword = false;
-      $scope.showDetails = false;
-      $scope.showPasswords = true;
-      $scope.firstLoad = false;
+      $scope.close();
     }
 
   }
