@@ -202,7 +202,7 @@
       <div class="row" style="background-color: white" ng-if="showPasswords">
         <div class="col-xs-12">
           <ul id="password-list">
-            <li ng-repeat="password in passwords"
+            <li ng-repeat="password in passwords track by $index"
                 ng-click="showDetailsForPassword(password)"
                 ng-style="{ 'background': (isHover ? '#FAFAFA' : 'transparent') }"
                 ng-mouseenter="isHover = true;"

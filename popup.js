@@ -64,16 +64,24 @@ function put(pkey, value, handler){
 function getPasswords(privateKey, master){
   return new Promise(function(resolve, reject) {
     get(privateKey, (data) => {
-      var crypt = aesjs.utils.utf8.toBytes(master);
-      var encryptedBytes = aesjs.utils.hex.toBytes(data);
-      var aesCtr = new aesjs.ModeOfOperation.ctr(crypt);
-      var decryptedBytes = aesCtr.decrypt(encryptedBytes);
-      var decryptedText = aesjs.utils.utf8.fromBytes(decryptedBytes);
-      try {
-        resolve(JSON.parse(decryptedText));
-      } catch (error) {
-        console.log(error);
-        resolve(null);
+      if (data == "00"){
+        resolve([]);
+      } else {
+        var crypt = aesjs.utils.utf8.toBytes(master);
+        var encryptedBytes = aesjs.utils.hex.toBytes(data);
+        var aesCtr = new aesjs.ModeOfOperation.ctr(crypt);
+        var decryptedBytes = aesCtr.decrypt(encryptedBytes);
+        var decryptedText = aesjs.utils.utf8.fromBytes(decryptedBytes);
+        try {
+          const arr = JSON.parse(decryptedText);
+          const fix = remove_duplicates_safe(arr);
+          console.log(JSON.stringify(fix));
+          resolve(fix);
+
+        } catch (error) {
+          console.log(error);
+          resolve(null);
+        }
       }
     });
   });
@@ -103,6 +111,19 @@ function fixMaster(master){
   }
 }
 
+function remove_duplicates_safe(arr) {
+  var seen = {};
+  var ret_arr = [];
+  for (var i = 0; i < arr.length; i++) {
+    const string = JSON.stringify(arr[i]);
+    if (!(string in seen)) {
+        ret_arr.push(arr[i]);
+        seen[string] = true;
+    }
+  }
+  return ret_arr;
+}
+
 app.config( [
     '$compileProvider',
     function( $compileProvider ) {
@@ -118,15 +139,7 @@ app.config( [
 
 app.controller("popupCtrl", function($scope, $http, $window) {
   // const privateKey = "274b0b664d9c1e993c1d62a42f78ba84c379e332aa1d050ce9c1840820acee8b";
-  // const master = fixMaster("Password");
-  // const newPasswords = {"Google.com" : {"Username" : "Wyetro", "Password" : "1234"}};
-
-  // encryptAndSerialize(privateKey, master, newPasswords, (res) => {
-  //   console.log(res.desc == "SUCCESS");
-  // });
-
   $scope.isLoggedIn = localStorage.getItem("isLoggedIn");
-
 
   // When first loaded
   $scope.addOrEdit = "Add a password"
@@ -141,10 +154,7 @@ app.controller("popupCtrl", function($scope, $http, $window) {
 
     $scope.isValidPrivateKey(pk, pw, (valid) => {
       if (valid) {
-        console.log('Login');
         $scope.logIn();
-      } else {
-        console.log('Invalid');
       }
     });
   }
@@ -182,33 +192,69 @@ app.controller("popupCtrl", function($scope, $http, $window) {
     document.getElementById("new-password").value = pw;
   }
 
+  $scope.close = function () {
+    $scope.showAddPassword = false;
+    $scope.showDetails = false;
+    $scope.showPasswords = true;
+    $scope.firstLoad = false;
+  }
+
   $scope.addNewPassword = function () {
     var un = document.getElementById("new-username").value;
     var url = document.getElementById("new-url").value;
     var pw = document.getElementById("new-password").value;
 
+    if ((un == "" || un == null) || (url == "" || url == null) || (pw == "" || pw == null)){
+      $scope.showAddPassword = false;
+      $scope.showDetails = false;
+      $scope.showPasswords = true;
+      $scope.firstLoad = false;
+      return
+    }
+
     var pk = localStorage.getItem("pk");
+    var master = localStorage.getItem("master");
 
-    console.log("add new password with pw:" + pw);
-    console.log("add new password with username:" + un);
-    console.log("add new password with url:" + url);
-    console.log("encrypt with :" + pk);
+    const newPassword = {
+      "password" : pw,
+      "username" : un,
+      "url" : url
+    }
 
-    $scope.showAddPassword = false;
-    $scope.showDetails = false;
-    $scope.showPasswords = true;
-    $scope.firstLoad = false;
+    const passwords = $scope.passwords;
+
+    if (!passwords.includes(newPassword)){
+      passwords.push(newPassword);
+      encryptAndSerialize(pk, master, passwords, (set) => {
+        const success = set.desc == "SUCCESS";
+        console.log(`Success: ${success}`);
+        if (success){
+          $scope.passwords = passwords;
+        }
+        $scope.close();
+
+      });
+
+    } else {
+      $scope.close();
+    }
 
   }
 
-  $scope.isValidPrivateKey = async function(key, master, handler) {
-    let res = await getPasswords(key, fixMaster(master));
+  $scope.isValidPrivateKey = async function(key, pw, handler) {
+    let master = fixMaster(pw);
+    let res = await getPasswords(key, master);
     if (res == null) {
       console.log("Incorrect password/privatekey combination");
       handler(false);
     } else {
       localStorage.setItem("pk", key);
-      handler(true);
+      localStorage.setItem("master", master);
+      $scope.passwords = res;
+      encryptAndSerialize(key, master, res, (set) => {
+        console.log(set.desc == "SUCCESS");
+        handler(true);
+      });
     }
   }
 
@@ -226,23 +272,6 @@ app.controller("popupCtrl", function($scope, $http, $window) {
 
   }
 
-  $scope.passwords = [
-      {
-      "password" : "pass!@#$",
-      "username" : "rosskranser",
-      "url" : "facebookc.com"
-    },
-    {
-      "password" : "06@!@#$",
-      "username" : "krasner.ross@gmail.com",
-      "url" : "twitter.com"
-    },
-    {
-      "password" : "06@!@#$",
-      "username" : "krasner.ross@gmail.com",
-      "url" : "twitter.com"
-    }
-  ];
   $scope.selectedPassword = {};
 
   $scope.showDetailsForPassword = function(pass) {
