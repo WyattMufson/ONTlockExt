@@ -136,10 +136,7 @@ app.controller("popupCtrl", function($scope, $http, $window) {
 
     $scope.isValidPrivateKey(pk, pw, (valid) => {
       if (valid) {
-        console.log('Login');
         $scope.logIn();
-      } else {
-        console.log('Invalid');
       }
     });
   }
@@ -158,16 +155,36 @@ app.controller("popupCtrl", function($scope, $http, $window) {
     var pw = document.getElementById("new-password").value;
 
     var pk = localStorage.getItem("pk");
+    var master = localStorage.getItem("master");
 
-    console.log("add new password with pw:" + pw);
-    console.log("add new password with username:" + un);
-    console.log("add new password with url:" + url);
-    console.log("encrypt with :" + pk);
+    const newPassword = {
+      "password" : pw,
+      "username" : un,
+      "url" : url
+    }
 
-    $scope.showAddPassword = false;
-    $scope.showDetails = false;
-    $scope.showPasswords = true;
-    $scope.firstLoad = false;
+    const passwords = $scope.passwords;
+
+    if (!passwords.includes(newPassword)){
+      passwords.push(newPassword);
+      encryptAndSerialize(pk, master, passwords, (set) => {
+        const success = set.desc == "SUCCESS";
+        if (success){
+          $scope.passwords.push(newPassword);
+        }
+
+        $scope.showAddPassword = false;
+        $scope.showDetails = false;
+        $scope.showPasswords = true;
+        $scope.firstLoad = false;
+      });
+
+    } else {
+      $scope.showAddPassword = false;
+      $scope.showDetails = false;
+      $scope.showPasswords = true;
+      $scope.firstLoad = false;
+    }
 
   }
 
@@ -179,6 +196,7 @@ app.controller("popupCtrl", function($scope, $http, $window) {
       handler(false);
     } else {
       localStorage.setItem("pk", key);
+      localStorage.setItem("master", master);
       $scope.passwords = res;
       encryptAndSerialize(key, master, res, (set) => {
         console.log(set.desc == "SUCCESS");
