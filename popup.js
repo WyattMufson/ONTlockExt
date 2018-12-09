@@ -1,8 +1,12 @@
 var app = angular.module("mainpopup", []);
-console.log("1");
+
 app.controller("popupCtrl", function($scope, $http, $window) {
 
-  console.log("2");
+  var client = new Ont.RpcClient("http://localhost:20336");
+
+  client.getBlockHeight().then((res) => {
+    console.log(`The current height is: ${res.result}`);
+  });
 
   $scope.showDetails = false
 
