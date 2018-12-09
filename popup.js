@@ -21,10 +21,40 @@ app.controller("popupCtrl", function($scope, $http, $window) {
     console.log(`The current height is: ${res.result}`);
   });
 
-  $scope.showDetails = false
+  $scope.isLoggedIn = localStorage.getItem("isLoggedIn");
 
-  $scope.hideDetails = function () {
+
+  // When first loaded
+    $scope.showDetails = false;
+    $scope.showPasswords = false;
+    $scope.firstLoad = true;
+
+
+
+  $scope.logInClicked = function() {
+    var pk = document.getElementById("private-key-input").value;
+    var pw = document.getElementById("password-input").value;
+
+    console.log("Sign in with Private key:" + pw);
+    console.log("and password:" + pk);
+    if ($scope.isValidPrivateKey(pk)) {
+      $scope.logIn()
+    }
+  }
+
+  $scope.isValidPrivateKey = function(key) {
+    localStorage.setItem("pk", key);
+    return true
+  }
+
+  $scope.logIn = function() {
+    $scope.firstLoad = false
+    $scope.showPasswords = true
+  }
+
+  $scope.backPressed = function () {
     $scope.showDetails = false
+    $scope.showPasswords = true
   }
 
   $scope.passwords = [
@@ -50,6 +80,7 @@ app.controller("popupCtrl", function($scope, $http, $window) {
         var pass = JSON.stringify(pass);
         localStorage.setItem("pass", pass);
         $scope.showDetails = true
+        $scope.showPasswords = false
     };
 
     $scope.action = function(pass, arg) {
