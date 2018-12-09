@@ -122,15 +122,7 @@ app.config( [
 
 app.controller("popupCtrl", function($scope, $http, $window) {
   // const privateKey = "274b0b664d9c1e993c1d62a42f78ba84c379e332aa1d050ce9c1840820acee8b";
-  // const master = fixMaster("Password");
-  // const newPasswords = {"Google.com" : {"Username" : "Wyetro", "Password" : "1234"}};
-
-  // encryptAndSerialize(privateKey, master, newPasswords, (res) => {
-  //   console.log(res.desc == "SUCCESS");
-  // });
-
   $scope.isLoggedIn = localStorage.getItem("isLoggedIn");
-
 
   // When first loaded
   $scope.showDetails = false;
