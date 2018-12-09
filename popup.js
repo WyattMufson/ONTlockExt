@@ -24,79 +24,6 @@ const {
 
 const client = new RpcClient("http://localhost:20336");
 
-function get(pkey, handler){
-  const privateKey = new PrivateKey(pkey);
-  const publicKey = privateKey.getPublicKey();
-  const user = Address.fromPubKey(publicKey);
-
-  const p1 = new Parameter('user', ByteArray, user.serialize());
-  const functionName = "get";
-  const contractAddr = new Address(utils.reverseHex("c168e0fb1a2bddcd385ad013c2c98358eca5d4dc"));
-  const gasPrice = "0";
-  const gasLimit = "20000";
-  const tx = TransactionBuilder.makeInvokeTransaction(functionName, [p1], contractAddr, gasPrice, gasLimit, user);
-  TransactionBuilder.signTransaction(tx, privateKey);
-
-  client.sendRawTransaction(tx.serialize(), true).then((res) => {
-    handler(res.result.Result);
-  });
-}
-
-function put(pkey, value, handler){
-  const privateKey = new PrivateKey(pkey);
-  const publicKey = privateKey.getPublicKey();
-  const user = Address.fromPubKey(publicKey);
-
-  const p1 = new Parameter('user', ByteArray, user.serialize());
-  const p2 = new Parameter('value', String, value);
-  const functionName = "put";
-  const contractAddr = new Address(utils.reverseHex("c168e0fb1a2bddcd385ad013c2c98358eca5d4dc"));
-  const gasPrice = "0";
-  const gasLimit = "20000";
-  const tx = TransactionBuilder.makeInvokeTransaction(functionName, [p1, p2], contractAddr, gasPrice, gasLimit, user);
-  TransactionBuilder.signTransaction(tx, privateKey);
-
-  client.sendRawTransaction(tx.serialize(), false).then((res) => {
-    handler(res);
-  });
-}
-
-function getPasswords(privateKey, master){
-  return new Promise(function(resolve, reject) {
-    get(privateKey, (data) => {
-      if (data == "00"){
-        resolve([]);
-      } else {
-        var crypt = aesjs.utils.utf8.toBytes(master);
-        var encryptedBytes = aesjs.utils.hex.toBytes(data);
-        var aesCtr = new aesjs.ModeOfOperation.ctr(crypt);
-        var decryptedBytes = aesCtr.decrypt(encryptedBytes);
-        var decryptedText = aesjs.utils.utf8.fromBytes(decryptedBytes);
-        try {
-          const arr = JSON.parse(decryptedText);
-          const fix = remove_duplicates_safe(arr);
-          console.log(JSON.stringify(fix));
-          resolve(fix);
-
-        } catch (error) {
-          console.log(error);
-          resolve(null);
-        }
-      }
-    });
-  });
-}
-
-function encryptAndSerialize(privateKey, master, dict, handler){
-  const str = JSON.stringify(dict)
-    var crypt = aesjs.utils.utf8.toBytes(master);
-    var textBytes = aesjs.utils.utf8.toBytes(str);
-    var aesCtr = new aesjs.ModeOfOperation.ctr(crypt);
-    var encryptedBytes = aesCtr.encrypt(textBytes);
-    var value = aesjs.utils.hex.fromBytes(encryptedBytes);
-    put(privateKey, value, handler);
-}
-
 // var passwords = {};
 
 function fixMaster(master){
@@ -122,6 +49,13 @@ function remove_duplicates_safe(arr) {
     }
   }
   return ret_arr;
+}
+
+function addhttp(url) {
+   if (!/^(f|ht)tps?:\/\//i.test(url)) {
+      url = "http://" + url;
+   }
+   return url;
 }
 
 app.config( [
@@ -159,6 +93,79 @@ app.controller("popupCtrl", function($scope, $http, $window) {
     });
   }
 
+  $scope.get = function(pkey, handler){
+    const privateKey = new PrivateKey(pkey);
+    const publicKey = privateKey.getPublicKey();
+    const user = Address.fromPubKey(publicKey);
+
+    const p1 = new Parameter('user', ByteArray, user.serialize());
+    const functionName = "get";
+    const contractAddr = new Address(utils.reverseHex("c168e0fb1a2bddcd385ad013c2c98358eca5d4dc"));
+    const gasPrice = "0";
+    const gasLimit = "20000";
+    const tx = TransactionBuilder.makeInvokeTransaction(functionName, [p1], contractAddr, gasPrice, gasLimit, user);
+    TransactionBuilder.signTransaction(tx, privateKey);
+
+    client.sendRawTransaction(tx.serialize(), true).then((res) => {
+      handler(res.result.Result);
+    });
+  }
+
+  $scope.put = function(pkey, value, handler){
+    const privateKey = new PrivateKey(pkey);
+    const publicKey = privateKey.getPublicKey();
+    const user = Address.fromPubKey(publicKey);
+
+    const p1 = new Parameter('user', ByteArray, user.serialize());
+    const p2 = new Parameter('value', String, value);
+    const functionName = "put";
+    const contractAddr = new Address(utils.reverseHex("c168e0fb1a2bddcd385ad013c2c98358eca5d4dc"));
+    const gasPrice = "0";
+    const gasLimit = "20000";
+    const tx = TransactionBuilder.makeInvokeTransaction(functionName, [p1, p2], contractAddr, gasPrice, gasLimit, user);
+    TransactionBuilder.signTransaction(tx, privateKey);
+
+    client.sendRawTransaction(tx.serialize(), false).then((res) => {
+      handler(res);
+    });
+  }
+
+  $scope.getPasswords = function(privateKey, master){
+    return new Promise(function(resolve, reject) {
+      $scope.get(privateKey, (data) => {
+        if (data == "00"){
+          resolve([]);
+        } else {
+          var crypt = aesjs.utils.utf8.toBytes(master);
+          var encryptedBytes = aesjs.utils.hex.toBytes(data);
+          var aesCtr = new aesjs.ModeOfOperation.ctr(crypt);
+          var decryptedBytes = aesCtr.decrypt(encryptedBytes);
+          var decryptedText = aesjs.utils.utf8.fromBytes(decryptedBytes);
+          try {
+            const arr = JSON.parse(decryptedText);
+            const fix = remove_duplicates_safe(arr);
+            console.log(JSON.stringify(fix));
+            resolve(fix);
+
+          } catch (error) {
+            console.log(error);
+            resolve(null);
+          }
+        }
+      });
+    });
+  }
+
+  $scope.encryptAndSerialize = function(privateKey, master, dict, handler){
+    const str = JSON.stringify(dict)
+      var crypt = aesjs.utils.utf8.toBytes(master);
+      var textBytes = aesjs.utils.utf8.toBytes(str);
+      var aesCtr = new aesjs.ModeOfOperation.ctr(crypt);
+      var encryptedBytes = aesCtr.encrypt(textBytes);
+      var value = aesjs.utils.hex.fromBytes(encryptedBytes);
+      $scope.put(privateKey, value, handler);
+  }
+
   $scope.addPassword = function() {
 
     $scope.addOrEdit = "Add a password"
@@ -170,6 +177,33 @@ app.controller("popupCtrl", function($scope, $http, $window) {
     $scope.showDetails = false;
     $scope.showPasswords = false;
     $scope.firstLoad = false;
+  }
+
+  $scope.deletePassword = function() {
+    var pass = localStorage.getItem("pass");
+    const array = $scope.passwords;
+
+    const length = array.length;
+    for (let i = 0; i < length; i += 1){
+      const current = JSON.stringify(array[i]);
+      console.log(current);
+      if (current == pass){
+        array.splice(i, 1);
+        break;
+      }
+    }
+
+    $scope.passwords = array;
+    $scope.close();
+
+    var pk = localStorage.getItem("pk");
+    var master = localStorage.getItem("master");
+
+    $scope.encryptAndSerialize(pk, master, $scope.passwords, (set) => {
+      const success = set.desc == "SUCCESS";
+      console.log(`Success: ${success}`);
+    });
+
   }
 
   $scope.editPassword = function() {
@@ -193,9 +227,10 @@ app.controller("popupCtrl", function($scope, $http, $window) {
   }
 
   $scope.close = function () {
+    $scope.showDetails = false
+    $scope.showPasswords = true
     $scope.showAddPassword = false;
     $scope.showDetails = false;
-    $scope.showPasswords = true;
     $scope.firstLoad = false;
   }
 
@@ -221,29 +256,23 @@ app.controller("popupCtrl", function($scope, $http, $window) {
       "url" : url
     }
 
-    const passwords = $scope.passwords;
 
-    if (!passwords.includes(newPassword)){
-      passwords.push(newPassword);
-      encryptAndSerialize(pk, master, passwords, (set) => {
-        const success = set.desc == "SUCCESS";
-        console.log(`Success: ${success}`);
-        if (success){
-          $scope.passwords = passwords;
-        }
-        $scope.close();
-
-      });
-
-    } else {
-      $scope.close();
+    if (!$scope.passwords.includes(newPassword)){
+      $scope.passwords.push(newPassword);
     }
+
+    $scope.close();
+
+    $scope.encryptAndSerialize(pk, master, $scope.passwords, (set) => {
+      const success = set.desc == "SUCCESS";
+      console.log(`Success: ${success}`);
+    });
 
   }
 
   $scope.isValidPrivateKey = async function(key, pw, handler) {
     let master = fixMaster(pw);
-    let res = await getPasswords(key, master);
+    let res = await $scope.getPasswords(key, master);
     if (res == null) {
       console.log("Incorrect password/privatekey combination");
       handler(false);
@@ -251,7 +280,7 @@ app.controller("popupCtrl", function($scope, $http, $window) {
       localStorage.setItem("pk", key);
       localStorage.setItem("master", master);
       $scope.passwords = res;
-      encryptAndSerialize(key, master, res, (set) => {
+      $scope.encryptAndSerialize(key, master, res, (set) => {
         console.log(set.desc == "SUCCESS");
         handler(true);
       });
@@ -325,7 +354,12 @@ app.controller("popupCtrl", function($scope, $http, $window) {
         var pass = localStorage.getItem("pass");
         var parsed = JSON.parse(pass);
         var url = parsed.url;
-         window.location.href ="//" + url;
+
+        const newUrl = addhttp(url);
+
+        chrome.tabs.update({
+           url: newUrl
+        });
 
       } else if (arg == 5) {
         // Edit
@@ -333,7 +367,7 @@ app.controller("popupCtrl", function($scope, $http, $window) {
 
       } else if (arg == 6) {
         // Delete
-
+        $scope.deletePassword();
       }
     };
 
