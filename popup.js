@@ -82,15 +82,22 @@ app.controller("popupCtrl", function($scope, $http, $window) {
   $scope.firstLoad = true;
   $scope.showAddPassword = false;
 
+  $scope.showError = false;
+
   $scope.logInClicked = function() {
     var pk = document.getElementById("private-key-input").value;
     var pw = document.getElementById("password-input").value;
-
     $scope.isValidPrivateKey(pk, pw, (valid) => {
       if (valid) {
         $scope.logIn();
+      } else {
+        $scope.showEror();
       }
     });
+  }
+
+  $scope.showEror = function() {
+    $scope.showError = true;
   }
 
   $scope.get = function(pkey, handler){
