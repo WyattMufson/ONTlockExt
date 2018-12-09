@@ -104,6 +104,11 @@
         transform: translateY(-13px);
         color: #555555;
       }
+      #first-load h6 {
+        font-size: 70%;
+        color: #2fa1bc;
+        margin-bottom: 0;
+      }
       #create-wallet {
         color: #2fa1bc;
         margin-left: 30px;
@@ -161,6 +166,19 @@
         margin-bottom: 0px;
         color: #2fa1bc;
       }
+      #no-pass h4 {
+        display: block;
+        margin-top: 50px;
+        margin-left: auto;
+        margin-right: auto;
+        text-align: center;
+      }
+      #no-pass a {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        text-align: center;
+      }
 
     </style>
   </head>
@@ -188,6 +206,8 @@
           <input id="private-key-input"></input>
           <p>Password</p>
           <input id="password-input" type="password"></input>
+          <h6>If this is your log in, you are creating a password</h6>
+          <h6 ng-if="showError" style="color: red">Could not sign in, check private key and try again</h6>
 
           <a ng-click="logInClicked()"><button>Log In</button></a>
 
@@ -213,6 +233,11 @@
               <hr>
             </li>
           </ul>
+          <div ng-if="!passwords.length" id="no-pass">
+            <h4>No Passwords yet!</h4>
+            <a ng-click="addPassword()">Add a password</a>
+          </div>
+
         </div>
       </div>
       <div class="row" style="background-color: white; padding-bottom: 20px;" ng-if="showDetails || showAddPassword">
