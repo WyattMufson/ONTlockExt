@@ -157,7 +157,7 @@
       }
       #add-new-password h5 {
         font-size: 130%;
-        margin-top: 20px;
+        margin-top: 0px;
         margin-bottom: 0px;
         color: #2fa1bc;
       }
@@ -215,20 +215,20 @@
           </ul>
         </div>
       </div>
-      <div class="row" style="background-color: white; padding-bottom: 20px;" ng-if="showDetails">
+      <div class="row" style="background-color: white; padding-bottom: 20px;" ng-if="showDetails || showAddPassword">
         <div class="col-xs-12">
           <a id="back" href="/" ng-click="backPressed()">Back</a>
         </div>
       </div>
 
       <!-- Add Password Page -->
-      <div class="row" style="background-color: white" ng-if="showAddPassword">
+      <div class="row" style="background-color: white" ng-show="showAddPassword">
         <div class="col-xs-12" id="add-new-password">
           <h5>{{addOrEdit}}</h5>
           <p>URL</p>
-          <input id="new-url" clientIdMode="static"></input>
+          <input id="new-url"></input>
           <p>Username</p>
-          <input id="new-username" clientIdMode="static"></input>
+          <input id="new-username"></input>
           <p>Password</p>
           <input id="new-password" type="password"></input>
 

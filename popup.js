@@ -138,21 +138,24 @@ app.controller("popupCtrl", function($scope, $http, $window) {
   $scope.logInClicked = function() {
     var pk = document.getElementById("private-key-input").value;
     var pw = document.getElementById("password-input").value;
+    $scope.logIn();
 
-    $scope.isValidPrivateKey(pk, pw, (valid) => {
-      if (valid) {
-        console.log('Login');
-        $scope.logIn();
-      } else {
-        console.log('Invalid');
-      }
-    });
+    // $scope.isValidPrivateKey(pk, pw, (valid) => {
+    //   if (valid) {
+    //     console.log('Login');
+    //     $scope.logIn();
+    //   } else {
+    //     console.log('Invalid');
+    //   }
+    // });
   }
 
   $scope.addPassword = function() {
 
     $scope.addOrEdit = "Add a password"
-
+    document.getElementById("new-username").value = "";
+    document.getElementById("new-url").value = "";
+    document.getElementById("new-password").value = "";
 
     $scope.showAddPassword = true;
     $scope.showDetails = false;
@@ -163,7 +166,6 @@ app.controller("popupCtrl", function($scope, $http, $window) {
   $scope.editPassword = function() {
 
     $scope.addOrEdit = "Edit a password"
-
 
     $scope.showAddPassword = true;
     $scope.showDetails = false;
@@ -179,7 +181,6 @@ app.controller("popupCtrl", function($scope, $http, $window) {
     document.getElementById("new-username").value = un;
     document.getElementById("new-url").value = url;
     document.getElementById("new-password").value = pw;
-
   }
 
   $scope.addNewPassword = function () {
@@ -220,6 +221,10 @@ app.controller("popupCtrl", function($scope, $http, $window) {
   $scope.backPressed = function () {
     $scope.showDetails = false
     $scope.showPasswords = true
+    $scope.showAddPassword = false;
+    $scope.showDetails = false;
+    $scope.firstLoad = false;
+
   }
 
   $scope.passwords = [
