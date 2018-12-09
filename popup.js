@@ -61,41 +61,35 @@ function put(pkey, value, handler){
   });
 }
 
-function getPasswords(privateKey, master, handler){
-  get(privateKey, (data) => {
-    try {
+function getPasswords(privateKey, master){
+  return new Promise(function(resolve, reject) {
+    get(privateKey, (data) => {
       var crypt = aesjs.utils.utf8.toBytes(master);
       var encryptedBytes = aesjs.utils.hex.toBytes(data);
       var aesCtr = new aesjs.ModeOfOperation.ctr(crypt);
       var decryptedBytes = aesCtr.decrypt(encryptedBytes);
       var decryptedText = aesjs.utils.utf8.fromBytes(decryptedBytes);
-      console.log(decryptedText);
       try {
-        handler(JSON.parse(decryptedText), null);
+        resolve(JSON.parse(decryptedText));
       } catch (error) {
-        handler({}, error);
+        console.log(error);
+        resolve(null);
       }
-    } catch (e) {
-      handler({}, e);
-    }
-  })
+    });
+  });
 }
 
 function encryptAndSerialize(privateKey, master, dict, handler){
   const str = JSON.stringify(dict)
-  try {
     var crypt = aesjs.utils.utf8.toBytes(master);
     var textBytes = aesjs.utils.utf8.toBytes(str);
     var aesCtr = new aesjs.ModeOfOperation.ctr(crypt);
     var encryptedBytes = aesCtr.encrypt(textBytes);
     var value = aesjs.utils.hex.fromBytes(encryptedBytes);
     put(privateKey, value, handler);
-  } catch (error) {
-    handler(error);
-  }
 }
 
-var passwords = {};
+// var passwords = {};
 
 function fixMaster(master){
   let rn = master;
@@ -123,17 +117,8 @@ app.config( [
 ]);
 
 app.controller("popupCtrl", function($scope, $http, $window) {
-  const privateKey = "274b0b664d9c1e993c1d62a42f78ba84c379e332aa1d050ce9c1840820acee8b";
-  const master = fixMaster("Pas7sword");
-
-  getPasswords(privateKey, master, (res, err) => {
-    if (err == null){
-      passwords = res;
-    }
-    console.log(res);
-    console.log(err);
-  })
-
+  // const privateKey = "274b0b664d9c1e993c1d62a42f78ba84c379e332aa1d050ce9c1840820acee8b";
+  // const master = fixMaster("Password");
   // const newPasswords = {"Google.com" : {"Username" : "Wyetro", "Password" : "1234"}};
 
   // encryptAndSerialize(privateKey, master, newPasswords, (res) => {
@@ -144,22 +129,24 @@ app.controller("popupCtrl", function($scope, $http, $window) {
 
 
   // When first loaded
-    $scope.showDetails = false;
-    $scope.showPasswords = false;
-    $scope.firstLoad = true;
-    $scope.showAddPassword = false;
-
-    $scope.addOrEdit = "Add a password"
+  $scope.addOrEdit = "Add a password"
+  $scope.showDetails = false;
+  $scope.showPasswords = false;
+  $scope.firstLoad = true;
+  $scope.showAddPassword = false;
 
   $scope.logInClicked = function() {
     var pk = document.getElementById("private-key-input").value;
     var pw = document.getElementById("password-input").value;
 
-    console.log("Sign in with Private key:" + pw);
-    console.log("and password:" + pk);
-    if ($scope.isValidPrivateKey(pk)) {
-      $scope.logIn()
-    }
+    $scope.isValidPrivateKey(pk, pw, (valid) => {
+      if (valid) {
+        console.log('Login');
+        $scope.logIn();
+      } else {
+        console.log('Invalid');
+      }
+    });
   }
 
   $scope.addPassword = function() {
@@ -193,7 +180,6 @@ app.controller("popupCtrl", function($scope, $http, $window) {
     document.getElementById("new-url").value = url;
     document.getElementById("new-password").value = pw;
 
-
   }
 
   $scope.addNewPassword = function () {
@@ -215,9 +201,15 @@ app.controller("popupCtrl", function($scope, $http, $window) {
 
   }
 
-  $scope.isValidPrivateKey = function(key) {
-    localStorage.setItem("pk", key);
-    return true
+  $scope.isValidPrivateKey = async function(key, master, handler) {
+    let res = await getPasswords(key, fixMaster(master));
+    if (res == null) {
+      console.log("Incorrect password/privatekey combination");
+      handler(false);
+    } else {
+      localStorage.setItem("pk", key);
+      handler(true);
+    }
   }
 
   $scope.logIn = function() {
